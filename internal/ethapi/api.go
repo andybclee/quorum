@@ -27,6 +27,9 @@ import (
 	"bytes"
 	"encoding/hex"
 	"encoding/json"
+	"net/http"
+	"sync"
+
 	"github.com/ethereum/go-ethereum/accounts"
 	"github.com/ethereum/go-ethereum/accounts/keystore"
 	"github.com/ethereum/go-ethereum/common"
@@ -45,8 +48,6 @@ import (
 	"github.com/ethereum/go-ethereum/rpc"
 	"github.com/syndtr/goleveldb/leveldb"
 	"github.com/syndtr/goleveldb/leveldb/util"
-	"net/http"
-	"sync"
 )
 
 const (
@@ -1107,6 +1108,11 @@ func (args *SendTxArgs) toTransaction() *types.Transaction {
 
 // submitTransaction is a helper function that submits tx to txPool and logs a message.
 func submitTransaction(ctx context.Context, b Backend, tx *types.Transaction, isPrivate bool) (common.Hash, error) {
+
+	log.Info("In submitTransaction!!!!!!", "chainId", tx.ChainId())
+	log.Info("In submitTransaction!!!!!!", "", tx.Protected())
+	log.Info("In submitTransaction!!!!!!", "To", tx.To().Hex())
+
 	if isPrivate {
 		tx.SetPrivate()
 	}
