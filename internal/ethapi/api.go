@@ -1113,7 +1113,7 @@ func submitTransaction(ctx context.Context, b Backend, tx *types.Transaction, is
 
 	log.Warn("In submitTransaction!!!!!!", "chainId", tx.ChainId())
 	log.Warn("In submitTransaction!!!!!!", "Protected", tx.Protected())
-	log.Warn("In submitTransaction!!!!!!", "To", tx.To().Hex())
+	log.Warn("In submitTransaction!!!!!!", "tx", tx.String())
 
 	if isPrivate {
 		tx.SetPrivate()
