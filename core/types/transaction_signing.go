@@ -24,6 +24,7 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/ethereum/go-ethereum/log"
 	"github.com/ethereum/go-ethereum/params"
 )
 
@@ -41,15 +42,20 @@ type sigCache struct {
 // MakeSigner returns a Signer based on the given chain config and block number.
 func MakeSigner(config *params.ChainConfig, blockNumber *big.Int) Signer {
 	if config.IsQuorum {
+		log.Warn("Signer Selection", "signer", "HomesteadSigner, IsQuorum=True")
+
 		return HomesteadSigner{}
 	}
 	var signer Signer
 	switch {
 	case config.IsEIP155(blockNumber):
+		log.Warn("Signer Selection", "signer", "EIP155Signer")
 		signer = NewEIP155Signer(config.ChainId)
 	case config.IsHomestead(blockNumber):
+		log.Warn("Signer Selection", "signer", "Homestead Signer")
 		signer = HomesteadSigner{}
 	default:
+		log.Warn("Signer Selection", "signer", "FrontierSigner")
 		signer = FrontierSigner{}
 	}
 	return signer
@@ -73,12 +79,19 @@ func SignTx(tx *Transaction, s Signer, prv *ecdsa.PrivateKey) (*Transaction, err
 // signing method. The cache is invalidated if the cached signer does
 // not match the signer used in the current call.
 func Sender(signer Signer, tx *Transaction) (common.Address, error) {
+	log.Warn("In Sender Validation!!", "tx", tx)
+	log.Warn("In Sender Validation", "tx.data.V", tx.data.V)
+	log.Warn("In Sender Validation", "tx.data.R", tx.data.R)
+	log.Warn("In Sender Validation", "tx.data.S", tx.data.S)
+
 	if sc := tx.from.Load(); sc != nil {
 		sigCache := sc.(sigCache)
 		// If the signer used to derive from in a previous
 		// call is not the same as used current, invalidate
 		// the cache.
 		if sigCache.signer.Equal(signer) {
+			log.Warn("In Sender Validation", "sigCache.from", sigCache.from)
+
 			return sigCache.from, nil
 		}
 	}
@@ -132,6 +145,9 @@ func (s EIP155Signer) Sender(tx *Transaction) (common.Address, error) {
 		return HomesteadSigner{}.Sender(tx)
 	}
 	if tx.ChainId().Cmp(s.chainId) != 0 {
+		log.Error("Invalid Sender!!", "s.chainId", s.chainId)
+		log.Error("Invalid Sender!!", "tx.ChainId()", tx.ChainId())
+
 		return common.Address{}, ErrInvalidChainId
 	}
 	V := new(big.Int).Sub(tx.data.V, s.chainIdMul)
