@@ -1111,10 +1111,6 @@ func (args *SendTxArgs) toTransaction() *types.Transaction {
 // submitTransaction is a helper function that submits tx to txPool and logs a message.
 func submitTransaction(ctx context.Context, b Backend, tx *types.Transaction, isPrivate bool) (common.Hash, error) {
 
-	log.Warn("In submitTransaction!!!!!!", "chainId", tx.ChainId())
-	log.Warn("In submitTransaction!!!!!!", "Protected", tx.Protected())
-	log.Warn("In submitTransaction!!!!!!", "tx", tx.String())
-
 	if isPrivate {
 		tx.SetPrivate()
 	}
@@ -1142,7 +1138,6 @@ func submitTransaction(ctx context.Context, b Backend, tx *types.Transaction, is
 // transaction pool.
 func (s *PublicTransactionPoolAPI) SendTransaction(ctx context.Context, args SendTxArgs) (common.Hash, error) {
 
-	log.Warn("In PublicTransactionPoolAPI.SendTransaction!!!", "data", "===================")
 	// Look up the wallet containing the requested signer
 	account := accounts.Account{Address: args.From}
 
@@ -1194,7 +1189,6 @@ func (s *PublicTransactionPoolAPI) SendTransaction(ctx context.Context, args Sen
 // SendRawTransaction will add the signed transaction to the transaction pool.
 // The sender is responsible for signing the transaction and using the correct nonce.
 func (s *PublicTransactionPoolAPI) SendRawTransaction(ctx context.Context, encodedTx hexutil.Bytes) (common.Hash, error) {
-	log.Warn("In SendRawTransaction!!!", "data", "==============")
 	tx := new(types.Transaction)
 	if err := rlp.DecodeBytes(encodedTx, tx); err != nil {
 		return common.Hash{}, err
@@ -1507,7 +1501,6 @@ func (a *Async) save(ctx context.Context, s *PublicTransactionPoolAPI, args Send
 	a.Lock()
 	defer a.Unlock()
 
-	log.Warn("Async.save", "data", "==============")
 	if args.Nonce == nil {
 		nonce, err := s.b.GetPoolNonce(ctx, args.From)
 		if err != nil {

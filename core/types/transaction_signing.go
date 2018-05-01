@@ -24,7 +24,6 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/log"
 	"github.com/ethereum/go-ethereum/params"
 )
 
@@ -47,13 +46,10 @@ func MakeSigner(config *params.ChainConfig, blockNumber *big.Int) Signer {
 	var signer Signer
 	switch {
 	case config.IsEIP155(blockNumber):
-		log.Warn("Signer Selection", "signer", "EIP155Signer")
 		signer = NewEIP155Signer(config.ChainId)
 	case config.IsHomestead(blockNumber):
-		log.Warn("Signer Selection", "signer", "Homestead Signer")
 		signer = HomesteadSigner{}
 	default:
-		log.Warn("Signer Selection", "signer", "FrontierSigner")
 		signer = FrontierSigner{}
 	}
 	return signer
@@ -77,7 +73,6 @@ func SignTx(tx *Transaction, s Signer, prv *ecdsa.PrivateKey) (*Transaction, err
 // signing method. The cache is invalidated if the cached signer does
 // not match the signer used in the current call.
 func Sender(signer Signer, tx *Transaction) (common.Address, error) {
-	log.Warn("In Sender Validation!!", "tx", tx)
 
 	if sc := tx.from.Load(); sc != nil {
 		sigCache := sc.(sigCache)
@@ -139,9 +134,6 @@ func (s EIP155Signer) Sender(tx *Transaction) (common.Address, error) {
 		return HomesteadSigner{}.Sender(tx)
 	}
 	if tx.ChainId().Cmp(s.chainId) != 0 {
-		log.Error("Invalid Sender!!", "s.chainId", s.chainId)
-		log.Error("Invalid Sender!!", "tx.ChainId()", tx.ChainId())
-
 		return common.Address{}, ErrInvalidChainId
 	}
 	V := new(big.Int).Sub(tx.data.V, s.chainIdMul)
