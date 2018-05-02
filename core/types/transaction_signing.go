@@ -165,6 +165,7 @@ func (s EIP155Signer) SignatureValues(tx *Transaction, sig []byte) (R, S, V *big
 	}
 
 	R, S, V, err = HomesteadSigner{}.SignatureValues(tx, sig)
+	log.Warn("In EIP155Signer.SignatureValues", "V", V)
 	if err != nil {
 		return nil, nil, nil, err
 	}
