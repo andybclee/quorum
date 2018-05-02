@@ -159,6 +159,7 @@ func (s EIP155Signer) Sender(tx *Transaction) (common.Address, error) {
 // WithSignature returns a new transaction with the given signature. This signature
 // needs to be in the [R || S || V] format where V is 0 or 1.
 func (s EIP155Signer) SignatureValues(tx *Transaction, sig []byte) (R, S, V *big.Int, err error) {
+	log.Warn("In EIP155Signer.SignatureValues")
 	if tx.IsPrivate() {
 		return HomesteadSigner{}.SignatureValues(tx, sig)
 	}
@@ -200,6 +201,13 @@ func (s HomesteadSigner) Equal(s2 Signer) bool {
 // SignatureValues returns signature values. This signature
 // needs to be in the [R || S || V] format where V is 0 or 1.
 func (hs HomesteadSigner) SignatureValues(tx *Transaction, sig []byte) (r, s, v *big.Int, err error) {
+	// Check R Value. If it is signed with EIP155, return EIP155 SignatureValues
+	R, _, _, _ := hs.FrontierSigner.SignatureValues(tx, sig)
+
+	if R.Uint64() == 37 || R.Uint64() == 38 {
+		return EIP155Signer{}.SignatureValues(tx, sig)
+	}
+
 	return hs.FrontierSigner.SignatureValues(tx, sig)
 }
 
