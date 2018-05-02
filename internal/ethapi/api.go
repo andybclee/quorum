@@ -1110,7 +1110,7 @@ func (args *SendTxArgs) toTransaction() *types.Transaction {
 
 // submitTransaction is a helper function that submits tx to txPool and logs a message.
 func submitTransaction(ctx context.Context, b Backend, tx *types.Transaction, isPrivate bool) (common.Hash, error) {
-
+	log.Warn("In submitTransaction", tx.String())
 	if isPrivate {
 		tx.SetPrivate()
 	}
