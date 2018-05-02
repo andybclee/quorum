@@ -204,7 +204,9 @@ func (hs HomesteadSigner) SignatureValues(tx *Transaction, sig []byte) (r, s, v 
 	// Check V Value. If it is signed with EIP155, return EIP155 SignatureValues
 	_, _, V, _ := hs.FrontierSigner.SignatureValues(tx, sig)
 
+	log.Warn("Checking V Value", "v", V)
 	if V.Uint64() == 37 || V.Uint64() == 38 {
+		log.Warn("V is EIP155", "V", V)
 		return EIP155Signer{}.SignatureValues(tx, sig)
 	}
 
