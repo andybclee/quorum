@@ -24,6 +24,7 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/ethereum/go-ethereum/log"
 	"github.com/ethereum/go-ethereum/params"
 )
 
@@ -41,15 +42,19 @@ type sigCache struct {
 // MakeSigner returns a Signer based on the given chain config and block number.
 func MakeSigner(config *params.ChainConfig, blockNumber *big.Int) Signer {
 	if config.IsQuorum {
+		log.Warn("SIGNER", "Signer", "Homestead - Quorum")
 		return HomesteadSigner{}
 	}
 	var signer Signer
 	switch {
 	case config.IsEIP155(blockNumber):
+		log.Warn("SIGNER", "Signer", "EIP155")
 		signer = NewEIP155Signer(config.ChainId)
 	case config.IsHomestead(blockNumber):
+		log.Warn("SIGNER", "Signer", "Homestead")
 		signer = HomesteadSigner{}
 	default:
+		log.Warn("SIGNER", "Signer", "Frontier")
 		signer = FrontierSigner{}
 	}
 	return signer

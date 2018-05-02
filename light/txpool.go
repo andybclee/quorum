@@ -347,6 +347,8 @@ func (pool *TxPool) validateTx(ctx context.Context, tx *types.Transaction) error
 	// Validate the transaction sender and it's sig. Throw
 	// if the from fields is invalid.
 	if from, err = types.Sender(pool.signer, tx); err != nil {
+		log.Error("Error in validateTx-light", "err", err)
+
 		return core.ErrInvalidSender
 	}
 	// Last but not least check for nonce errors
