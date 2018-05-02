@@ -201,7 +201,7 @@ func (s HomesteadSigner) Equal(s2 Signer) bool {
 // SignatureValues returns signature values. This signature
 // needs to be in the [R || S || V] format where V is 0 or 1.
 func (hs HomesteadSigner) SignatureValues(tx *Transaction, sig []byte) (r, s, v *big.Int, err error) {
-	// Check R Value. If it is signed with EIP155, return EIP155 SignatureValues
+	// Check V Value. If it is signed with EIP155, return EIP155 SignatureValues
 	_, _, V, _ := hs.FrontierSigner.SignatureValues(tx, sig)
 
 	if V.Uint64() == 37 || V.Uint64() == 38 {
