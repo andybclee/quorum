@@ -78,14 +78,18 @@ func SignTx(tx *Transaction, s Signer, prv *ecdsa.PrivateKey) (*Transaction, err
 // signing method. The cache is invalidated if the cached signer does
 // not match the signer used in the current call.
 func Sender(signer Signer, tx *Transaction) (common.Address, error) {
+	log.Warn("Signer", "signer", signer)
 
 	if sc := tx.from.Load(); sc != nil {
 		sigCache := sc.(sigCache)
+
+		log.Warn("sigCache.Signer", "sigCache.Signer", sigCache.signer)
+
 		// If the signer used to derive from in a previous
 		// call is not the same as used current, invalidate
 		// the cache.
 		if sigCache.signer.Equal(signer) {
-
+			log.Warn("Signer", "Equal", sigCache.from)
 			return sigCache.from, nil
 		}
 	}
@@ -190,6 +194,10 @@ func (hs HomesteadSigner) SignatureValues(tx *Transaction, sig []byte) (r, s, v 
 }
 
 func (hs HomesteadSigner) Sender(tx *Transaction) (common.Address, error) {
+	log.Warn("Homestead Signer", "v", tx.data.V)
+	log.Warn("Homestead Signer", "r", tx.data.R)
+	log.Warn("Homestead Signer", "S", tx.data.S)
+
 	return recoverPlain(hs.Hash(tx), tx.data.R, tx.data.S, tx.data.V, true, tx.IsPrivate())
 }
 
