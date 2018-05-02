@@ -1499,12 +1499,15 @@ func (a *Async) send(ctx context.Context, s *PublicTransactionPoolAPI, asyncArgs
 }
 
 func (a *Async) save(ctx context.Context, s *PublicTransactionPoolAPI, args SendTxArgs, data []byte) (common.Hash, error) {
+
+	log.Warn("Async.save ", "data", "=======================================")
 	a.Lock()
 	defer a.Unlock()
 
 	if args.Nonce == nil {
 		nonce, err := s.b.GetPoolNonce(ctx, args.From)
 		if err != nil {
+			log.Warn("Async.save Error while GetPoolNonce", "err", err)
 			return common.Hash{}, err
 		}
 		args.Nonce = (*hexutil.Uint64)(&nonce)
@@ -1518,6 +1521,8 @@ func (a *Async) save(ctx context.Context, s *PublicTransactionPoolAPI, args Send
 
 	signed, err := s.sign(args.From, tx)
 	if err != nil {
+		log.Warn("Async.save Error while sign", "err", err)
+
 		return common.Hash{}, err
 	}
 
