@@ -1195,8 +1195,8 @@ func (s *PublicTransactionPoolAPI) SendRawTransaction(ctx context.Context, encod
 	if err := rlp.DecodeBytes(encodedTx, tx); err != nil {
 		return common.Hash{}, err
 	}
-	log.Warn("tx.from", "tx.from", tx.from)
-	log.Warn("tx.data.V", "tx.data.V", tx.data.V)
+	log.Warn("tx.ChainId()", "tx.ChainId()", tx.ChainId())
+	log.Warn("tx.data.V", "tx.data.V", tx.Data())
 
 	return submitTransaction(ctx, s.b, tx, tx.IsPrivate())
 }
